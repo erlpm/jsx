@@ -9,7 +9,7 @@ v3.0
 
 v2.8.2
 
-* enable `debug_info` for rebar3
+* enable `debug_info` for epm
 
 v2.8.1
 
@@ -50,7 +50,7 @@ v2.6.0
 
 v2.5.3
 
-* add a `mix.exs` to be buildable by both mix and rebar
+* add a `mix.exs` to be buildable by both mix and epm
 * minor README updates
 
 v2.5.2
@@ -131,9 +131,9 @@ v2.0
 * removed `pre_encode` and `post_decode` options in favour of making jsx
     functions easier to wrap and customize
 * streaming behavior is now disabled by default and must be requested explicitly
-* removed deprecated function names (`to_json`, `to_term`, `term_to_json`, etc) 
+* removed deprecated function names (`to_json`, `to_term`, `term_to_json`, etc)
 * expanded test coverage
-    
+
 
 v1.4.5
 
@@ -148,7 +148,7 @@ v1.4.4
 
 v1.4.3
 
-* add empty rebar.config for mix build tool
+* add empty epm.config for mix build tool
 * add `attempt_atom` option for decoding json objects
 * fix a bug related to multibyte codepoints and streaming input
 * add a missing error state in the encoder
@@ -220,4 +220,4 @@ v1.0.2
 
 v1.0.1
 
-* rebar fix
+* epm fix

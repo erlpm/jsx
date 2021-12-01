@@ -1,4 +1,4 @@
-.rebar3
+.epm
 .eunit
 deps
 ebin
@@ -8,8 +8,8 @@ ebin
 erl_crash.dump
 .DS_Store
 doc
-.rebar
+.epm
 *.sublime-*
-rebar3
+epm
 _build/
 

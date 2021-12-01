@@ -1,10 +1,10 @@
 # jsx (v3.0.0) #
 
 
-an erlang application for consuming, producing and manipulating [json][json]. 
+an erlang application for consuming, producing and manipulating [json][json].
 inspired by [yajl][yajl]
 
-**jsx** is built via [rebar3][rebar3]
+**jsx** is built via [epm][epm]
 
 current status: ![](https://github.com/talentdeficit/jsx/workflows/EUnit/badge.svg)
 
@@ -41,8 +41,8 @@ copyright 2010-2016 alisdair sullivan
 
 ## quickstart ##
 
-#### to add to a rebar3 project ####
-Add to `rebar.config`
+#### to add to a epm project ####
+Add to `epm.config`
 ```erlang
 ...
 {erl_opts, [debug_info]}.
@@ -56,8 +56,8 @@ Add to `rebar.config`
 #### to build the library and run tests ####
 
 ```bash
-$ rebar3 compile
-$ rebar3 eunit
+$ epm compile
+$ epm eunit
 ```
 
 #### to convert a utf8 binary containing a json string into an erlang term ####
@@ -124,7 +124,7 @@ false
 ## description ##
 
 
-**jsx** is an erlang application for consuming, producing and manipulating 
+**jsx** is an erlang application for consuming, producing and manipulating
 [json][json]
 
 **jsx** follows the json [spec][rfc4627] as closely as possible with allowances for
@@ -133,7 +133,7 @@ real world usage
 **jsx** is pragmatic. the json spec allows extensions so **jsx** extends the spec in a
 number of ways. see the section on `strict` in [options](#option) below though
 
-json has no official comments but this parser allows c/c++ style comments. 
+json has no official comments but this parser allows c/c++ style comments.
 anywhere whitespace is allowed you can insert comments (both `// ...` and `/* ... */`)
 
 some particularly irresponsible json emitters leave trailing commas at the end of
@@ -142,7 +142,7 @@ in any posistion or a preceding comma are still errors
 
 all **jsx** decoder input should be `utf8` encoded binaries. sometimes you get binaries
 that are almost but not quite valid utf8 whether due to improper escaping or poor
-encoding. **jsx** replaces invalid codepoints and poorly formed sequences with the 
+encoding. **jsx** replaces invalid codepoints and poorly formed sequences with the
 unicode replacement character (`u+FFFD`) but does it's best to return something
 comprehensible
 
@@ -170,18 +170,18 @@ see below                       | `datetime()`
     javascript and thus json represent all numeric values with floats. there's no
     reason for erlang -- a language that supports arbitrarily large integers -- to
     restrict all numbers to the ieee754 range
-    
-    whenever possible, **jsx** will interpret json numbers that look like integers as 
+
+    whenever possible, **jsx** will interpret json numbers that look like integers as
     integers. other numbers will be converted  to erlang's floating point type, which
     is nearly but not quite iee754. negative zero is not representable in erlang (zero
     is unsigned in erlang and `0` is equivalent to `-0`) and will be interpreted as
     regular zero. numbers not representable are beyond the concern of this implementation,
     and will result in parsing errors
 
-    when converting from erlang to json, floats are represented with their 
-    shortest representation that will round trip without loss of precision. this 
-    means that some floats may be superficially dissimilar (although 
-    functionally equivalent). for example, `1.0000000000000001` will be 
+    when converting from erlang to json, floats are represented with their
+    shortest representation that will round trip without loss of precision. this
+    means that some floats may be superficially dissimilar (although
+    functionally equivalent). for example, `1.0000000000000001` will be
     represented by `1.0`
 
 *   strings
@@ -191,36 +191,36 @@ see below                       | `datetime()`
     in addition to being unicode json strings restrict a number of codepoints and
     define a number of escape sequences
 
-    json string escapes of the form `\uXXXX` will be converted to their 
-    equivalent codepoints during parsing. this means control characters and 
-    other codepoints disallowed by the json spec may be encountered in resulting 
+    json string escapes of the form `\uXXXX` will be converted to their
+    equivalent codepoints during parsing. this means control characters and
+    other codepoints disallowed by the json spec may be encountered in resulting
     strings. the utf8 restriction means the surrogates are explicitly disallowed.
     if a string contains escaped surrogates (`u+d800` to `u+dfff`) they are
     interpreted but only when they form valid surrogate pairs. surrogates
     encountered otherwise are replaced with the replacement codepoint (`u+fffd`)
 
-    all erlang strings are represented by **valid** `utf8` encoded binaries. the 
+    all erlang strings are represented by **valid** `utf8` encoded binaries. the
     encoder will check strings for conformance. badly formed `utf8` sequences may
     be replaced with the replacement codepoint (`u+fffd`) according to the unicode
     spec
 
-    this implementation performs no normalization on strings beyond that 
-    detailed here. be careful when comparing strings as equivalent strings 
+    this implementation performs no normalization on strings beyond that
+    detailed here. be careful when comparing strings as equivalent strings
     may have different `utf8` encodings
 
 *   true, false and null
 
-    the json primitives `true`, `false` and `null` are represented by the 
+    the json primitives `true`, `false` and `null` are represented by the
     erlang atoms `true`, `false` and `null`. surprise
 
 *   arrays
 
-    json arrays are represented with erlang lists of json values as described 
+    json arrays are represented with erlang lists of json values as described
     in this section
 
 *   objects
 
-    json objects are represented by erlang maps.    
+    json objects are represented by erlang maps.
 
 *   datetime
 
@@ -233,14 +233,14 @@ see below                       | `datetime()`
 
 **jsx** can handle incomplete json texts. if the option `stream` is passed to the decoder
 or parser and if a partial json text is parsed, rather than returning a term from
-your callback handler, **jsx** returns `{incomplete, F}` where  `F` is a function with 
-an identical API to the anonymous fun returned from `decoder/3`, `encoder/3` or 
+your callback handler, **jsx** returns `{incomplete, F}` where  `F` is a function with
+an identical API to the anonymous fun returned from `decoder/3`, `encoder/3` or
 `parser/3`. it retains the internal state of the  parser at the point where input
-was exhausted. this allows you to parse as you stream json over a socket or file 
+was exhausted. this allows you to parse as you stream json over a socket or file
 descriptor, or to parse large json texts without needing to keep them entirely in
 memory
 
-however, it is important to recognize that **jsx** is conservative by default. **jsx** will 
+however, it is important to recognize that **jsx** is conservative by default. **jsx** will
 not consider the parsing complete even when input is exhausted and the json text is
 unambiguously incomplete. to end parsing call the `incomplete` function with the
 argument `end_stream` (or `end_json`) like:
@@ -275,7 +275,7 @@ json_term() = [json_term()]
 		| datetime()
 ```
 
-the erlang representation of json. binaries should be `utf8` encoded, or close 
+the erlang representation of json. binaries should be `utf8` encoded, or close
 at least
 
 #### `json_text()` ####
@@ -324,36 +324,36 @@ strict_option() = comments
     | utf8
     | single_quotes
     | escapes
-``` 
+```
 
-**jsx** functions all take a common set of options. not all flags have meaning 
-in all contexts, but they are always valid options. functions may have 
-additional options beyond these. see 
+**jsx** functions all take a common set of options. not all flags have meaning
+in all contexts, but they are always valid options. functions may have
+additional options beyond these. see
 [individual function documentation](#exports) for details
 
 - `dirty_strings`
 
-    json escaping is lossy; it mutates the json string and repeated application 
-    can result in unwanted behaviour. if your strings are already escaped (or 
-    you'd like to force invalid strings into "json" you monster) use this flag 
-    to bypass escaping. this can also be used to read in **really** invalid json 
-    strings. everything between unescaped quotes are passed as is to the resulting 
+    json escaping is lossy; it mutates the json string and repeated application
+    can result in unwanted behaviour. if your strings are already escaped (or
+    you'd like to force invalid strings into "json" you monster) use this flag
+    to bypass escaping. this can also be used to read in **really** invalid json
+    strings. everything between unescaped quotes are passed as is to the resulting
     string term. note that this takes precedence over any other options
 
 - `escaped_forward_slashes`
 
-    json strings are escaped according to the json spec. this means forward 
-    slashes (solidus) are only escaped when this flag is present. otherwise they 
-    are left unescaped. you may want to use this if you are embedding json 
+    json strings are escaped according to the json spec. this means forward
+    slashes (solidus) are only escaped when this flag is present. otherwise they
+    are left unescaped. you may want to use this if you are embedding json
     directly into a html or xml document
 
 - `escaped_strings`
 
-    by default both the encoder and decoder return strings as utf8 binaries 
-    appropriate for use in erlang. escape sequences that were present in decoded 
-    terms are converted into the appropriate codepoint while encoded terms are 
-    unaltered. this flag escapes strings as if for output in json, removing 
-    control codes and problematic codepoints and replacing them with the 
+    by default both the encoder and decoder return strings as utf8 binaries
+    appropriate for use in erlang. escape sequences that were present in decoded
+    terms are converted into the appropriate codepoint while encoded terms are
+    unaltered. this flag escapes strings as if for output in json, removing
+    control codes and problematic codepoints and replacing them with the
     appropriate escapes
 
 - `stream`
@@ -365,28 +365,28 @@ additional options beyond these. see
     as mentioned [earlier](#description), **jsx** is pragmatic. if you're more of a
     json purist or you're really into bdsm stricter adherence to the spec is
     possible. the following restrictions are available
-    
+
     * `comments`
-    
+
         comments are disabled and result in a `badarg` error
-    
+
     * `trailing_commas`
-    
+
         trailing commas in an object or list result in `badarg` errors
-    
+
     * `utf8`
-    
+
         invalid codepoints and malformed unicode result in `badarg` errors
 
     * `single_quotes`
-    
+
         only keys and strings delimited by double quotes (`u+0022`) are allowed. the
         single quote (`u+0027`) results in a `badarg` error
-    
+
     * `escapes`
 
         escape sequences not adhering to the json spec result in a `badarg` error
-    
+
     * `control_codes`
 
         control codes in strings result in `badarg` errors
@@ -409,10 +409,10 @@ additional options beyond these. see
 
 - `unescaped_jsonp`
 
-    javascript interpreters treat the codepoints `u+2028` and `u+2029` as 
-    significant whitespace. json strings that contain either of these codepoints 
-    will be parsed incorrectly by some javascript interpreters. by default, 
-    these codepoints are escaped (to `\u2028` and `\u2029`, respectively) to 
+    javascript interpreters treat the codepoints `u+2028` and `u+2029` as
+    significant whitespace. json strings that contain either of these codepoints
+    will be parsed incorrectly by some javascript interpreters. by default,
+    these codepoints are escaped (to `\u2028` and `\u2029`, respectively) to
     retain compatibility. this option simply removes that escaping
 
 
@@ -434,26 +434,26 @@ parser(Module, Args, Opts) -> Fun((Tokens) -> any())
   Tokens = event() | [event()]
 ```
 
-**jsx** is a json compiler with interleaved tokenizing, syntactic analysis and 
-semantic analysis stages. included are two tokenizers; one that handles json 
-texts (`decoder/3`) and one that handles erlang terms (`encoder/3`). there is 
-also an entry point to the syntactic analysis stage for use with user-defined 
+**jsx** is a json compiler with interleaved tokenizing, syntactic analysis and
+semantic analysis stages. included are two tokenizers; one that handles json
+texts (`decoder/3`) and one that handles erlang terms (`encoder/3`). there is
+also an entry point to the syntactic analysis stage for use with user-defined
 tokenizers (`parser/3`)
 
-all three functions return an anonymous function that takes the appropriate type 
-of input and returns the result of performing semantic analysis, the tuple 
-`{incomplete, F}` where `F` is a new anonymous function (see 
-[incomplete input](#incomplete_input)) or a `badarg` error exception if 
+all three functions return an anonymous function that takes the appropriate type
+of input and returns the result of performing semantic analysis, the tuple
+`{incomplete, F}` where `F` is a new anonymous function (see
+[incomplete input](#incomplete_input)) or a `badarg` error exception if
 syntactic analysis fails
 
 `Module` is the name of the callback module
 
-`Args` is any term that will be passed to `Module:init/1` prior to syntactic 
+`Args` is any term that will be passed to `Module:init/1` prior to syntactic
 analysis to produce an initial state
 
 `Opts` are detailed [here](#option)
 
-check out [callback module documentation](#callback_exports) for details of 
+check out [callback module documentation](#callback_exports) for details of
 the callback module interface
 
 #### `decode/1,2` ####
@@ -469,7 +469,7 @@ decode(JSON, Opts) -> Term
     F = fun((any()) -> any())
 ```
 
-`decode` parses a json text (a `utf8` encoded binary) and produces an erlang 
+`decode` parses a json text (a `utf8` encoded binary) and produces an erlang
 term
 
 the option `labels` controls how keys are converted from json to
@@ -481,7 +481,7 @@ new atoms to the atom table and will result in a `badarg` error if the atom
 does not exist. `attempt_atom` will convert keys to atoms when they exist,
 and leave them as binary otherwise
 
-the option `{return_maps, false}` will return objects as proplists instead 
+the option `{return_maps, false}` will return objects as proplists instead
 of maps.
 
 raises a `badarg` error exception if input is not valid json
@@ -501,14 +501,14 @@ encode(Term, Opts) -> JSON
 
 `encode` converts an erlang term into json text (a `utf8` encoded binary)
 
-the option `{space, N}` inserts `N` spaces after every comma and colon in your 
+the option `{space, N}` inserts `N` spaces after every comma and colon in your
 json output. `space` is an alias for `{space, 1}`. the default is `{space, 0}`
 
-the option `{indent, N}` inserts a newline and `N` spaces for each level of 
-indentation in your json output. note that this overrides spaces inserted after 
+the option `{indent, N}` inserts a newline and `N` spaces for each level of
+indentation in your json output. note that this overrides spaces inserted after
 a comma. `indent` is an alias for `{indent, 1}`. the default is `{indent, 0}`
 
-raises a `badarg` error exception if input is not a valid 
+raises a `badarg` error exception if input is not a valid
 [erlang representation of json](#json---erlang-mapping)
 
 
@@ -524,17 +524,17 @@ format(JSON, Opts) -> JSON
     LF = binary()
 ```
 
-`format` parses a json text (a `utf8` encoded binary) and produces a new json 
+`format` parses a json text (a `utf8` encoded binary) and produces a new json
 text according to the format rules specified by `Opts`
 
-the option `{space, N}` inserts `N` spaces after every comma and colon in your 
+the option `{space, N}` inserts `N` spaces after every comma and colon in your
 json output. `space` is an alias for `{space, 1}`. the default is `{space, 0}`
 
-the option `{indent, N}` inserts a newline and `N` spaces for each level of 
-indentation in your json output. note that this overrides spaces inserted after 
+the option `{indent, N}` inserts a newline and `N` spaces for each level of
+indentation in your json output. note that this overrides spaces inserted after
 a comma. `indent` is an alias for `{indent, 1}`. the default is `{indent, 0}`
 
-the option `{newline, LF}` defines a custom newline symbol(s). 
+the option `{newline, LF}` defines a custom newline symbol(s).
 the default is `{newline, <<$\n>>}`
 
 raises a `badarg` error exception if input is not valid json
@@ -548,7 +548,7 @@ minify(JSON) -> JSON
   JSON = json_text()
 ```
 
-`minify` parses a json text (a `utf8` encoded binary) and produces a new json 
+`minify` parses a json text (a `utf8` encoded binary) and produces a new json
 text stripped of whitespace
 
 raises a `badarg` error exception if input is not valid json
@@ -562,7 +562,7 @@ prettify(JSON) -> JSON
   JSON = json_text()
 ```
 
-`prettify` parses a json text (a `utf8` encoded binary) and produces a new json 
+`prettify` parses a json text (a `utf8` encoded binary) and produces a new json
 text equivalent to `format(JSON, [{space, 1}, {indent, 2}])`
 
 raises a `badarg` error exception if input is not valid json
@@ -610,8 +610,8 @@ Module:init(Args) -> InitialState
   InitialState = any()
 ```
 
-whenever any of `encoder/3`, `decoder/3` or `parser/3` are called, this function 
-is called with the `Args` argument provided in the calling function to obtain 
+whenever any of `encoder/3`, `decoder/3` or `parser/3` are called, this function
+is called with the `Args` argument provided in the calling function to obtain
 `InitialState`
 
 #### `Module:handle_event/2` ####
@@ -624,9 +624,9 @@ Module:handle_event(Event, State) -> NewState
   NewState = any()
 ```
 
-semantic analysis is performed by repeatedly calling `handle_event/2` with a 
-stream of events emitted by the tokenizer and the current state. the new state 
-returned is used as the input to the next call to `handle_event/2`. the 
+semantic analysis is performed by repeatedly calling `handle_event/2` with a
+stream of events emitted by the tokenizer and the current state. the new state
+returned is used as the input to the next call to `handle_event/2`. the
 following events must be handled:
 
 -   `start_object`
@@ -651,7 +651,7 @@ following events must be handled:
 
 -   `{string, binary()}`
 
-    a json string. it will usually be a `utf8` encoded binary. see the 
+    a json string. it will usually be a `utf8` encoded binary. see the
     [options](#option) for possible exceptions. note that keys are also
     json strings
 
@@ -677,7 +677,7 @@ following events must be handled:
 
 -   `end_json`
 
-    this event is emitted when syntactic analysis is completed. you should 
+    this event is emitted when syntactic analysis is completed. you should
     do any cleanup and return the result of your semantic analysis
 
 
@@ -688,7 +688,7 @@ jsx wouldn't be what it is without the contributions of [Paul J. Davis](https://
 [json]: http://json.org
 [yajl]: http://lloyd.github.com/yajl
 [MIT]: http://www.opensource.org/licenses/mit-license.html
-[rebar3]: https://rebar3.org
+[epm]: https://erl.pm
 [meck]: https://github.com/eproxus/meck
 [rfc4627]: http://tools.ietf.org/html/rfc4627
 [travis]: https://travis-ci.org/
